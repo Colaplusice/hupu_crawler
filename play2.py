@@ -1,17 +1,18 @@
+import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
-import bs4
-import re
-import matplotlib.pyplot as plt
+
 plt.rcParams['font.sans-serif'] = ['SimHei']
-urls = ['https://my.hupu.com/127854053218810','https://my.hupu.com/181795428473465']
-with open('Personurl','r') as f:
+urls = ['https://my.hupu.com/127854053218810', 'https://my.hupu.com/181795428473465']
+with open('Personurl', 'r') as f:
     urls.append(f.read())
-f = open("Personurl","r")
-lines = f.readlines()#读取全部内容
+f = open("Personurl", "r")
+lines = f.readlines()  # 读取全部内容
 print(type(lines))
 for i in range(10):
     urls.append(lines[i])
+
+
 # headers = {
 #     'Host': url,
 #     'User-Agent': 'Mozilla/5.0 (Linux;Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit'
@@ -37,49 +38,56 @@ def get():
     msg.append(locations)
     for url in urls:
         spanmsg = {}
-        req=requests.get(url)
+        req = requests.get(url)
         req.encoding = req.apparent_encoding
         soup = BeautifulSoup(req.text, 'html.parser')
-        soup=soup.find('div',{'class':'personalinfo'})
-        if soup!=None:
+        soup = soup.find('div', {'class': 'personalinfo'})
+        if soup != None:
             names = soup.find_all('span')
         # print(names)
 
-        flag=1
+        flag = 1
 
-        for index_each,each  in enumerate(names):
+        for index_each, each in enumerate(names):
             # print((each.attrs))
-            if each.attrs=={'class': ['f666']}:
+            if each.attrs == {'class': ['f666']}:
                 ins = ''.join(str(each.text).split())
-                spanmsg[ins]=index_each
+                spanmsg[ins] = index_each
         # print(spanmsg)
         if sex in spanmsg.keys():
-            ms=names[spanmsg.get(sex) + 1].text
-            if msg[0].get(names[spanmsg.get(sex)+1].text)==None:
-                msg[0][names[spanmsg.get(sex)+1].text]=1
-            else:msg[0][names[spanmsg.get(sex)+1].text]+=1
+            ms = names[spanmsg.get(sex) + 1].text
+            if msg[0].get(names[spanmsg.get(sex) + 1].text) == None:
+                msg[0][names[spanmsg.get(sex) + 1].text] = 1
+            else:
+                msg[0][names[spanmsg.get(sex) + 1].text] += 1
         if team in spanmsg.keys():
-            if msg[1].get(names[spanmsg.get(team)+1].text)==None:
-                msg[1][names[spanmsg.get(team)+1].text]=1
-            else:msg[1][names[spanmsg.get(team)+1].text]+=1
+            if msg[1].get(names[spanmsg.get(team) + 1].text) == None:
+                msg[1][names[spanmsg.get(team) + 1].text] = 1
+            else:
+                msg[1][names[spanmsg.get(team) + 1].text] += 1
         if location in spanmsg.keys():
-            if msg[2].get(names[spanmsg.get(location)+1].text) == None:
+            if msg[2].get(names[spanmsg.get(location) + 1].text) == None:
                 msg[2][names[spanmsg.get(location) + 1].text] = 1
             else:
                 msg[2][names[spanmsg.get(location) + 1].text] += 1
-        else:continue
+        else:
+            continue
     print(msg)
     return msg
     # print(names)
+
+
 def vis(value):
     # 传进来的是一个字典[{'男': 1}, {}, {'江苏省 南京市': 1}]
     for each in value:
-        showlable=[]
+        showlable = []
         shownum = []
         for i in each:
             showlable.append(i)
             shownum.append(each.get(i))
         plt.pie(shownum, labels=showlable, autopct='%d%%')
         plt.show()
-msg=get()
+
+
+msg = get()
 vis(msg)
